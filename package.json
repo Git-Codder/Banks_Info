@@ -1,0 +1,25 @@
+{
+  "name": "fyle_chalange",
+  "version": "1.0.0",
+  "description": "Fyle Full Stack Chalange",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Git-Codder/Fyle_Chalange.git"
+  },
+  "author": "Aditya Kumawat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Git-Codder/Fyle_Chalange/issues"
+  },
+  "homepage": "https://github.com/Git-Codder/Fyle_Chalange#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "pg": "^8.6.0",
+    "request": "^2.88.2"
+  }
+}

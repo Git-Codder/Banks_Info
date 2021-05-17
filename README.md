@@ -1,2 +1,2 @@
-# Fyle_Chalange_Part_2
-Second Part of the Fyle Chalange 
+# Fyle_Chalange
+This is the Fyle coding chalange solution of both part. 
