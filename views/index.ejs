@@ -1,0 +1,182 @@
+<%- include('../partials/header'); -%>
+
+<div id="banks" style=" width: 66%; margin-top: 2%; margin-left: 15%; margin-left: 15%; position: relative; ">
+    <table class="table table-hover" id ="page_table"  >
+    
+    <!-- put a good divider line  -->
+    </table>    
+</div>
+
+<nav id="page-nav" style="text-align: center;">
+    <ul class="pagination justify-content-center">
+        <li class="page-item disabled">
+            <a href="#" class="page-link" >Prev</a>
+        </li>
+        <li class="page-item active">
+            <a href="#" class="page-link" >1</a>
+        </li>
+        <li class="page-item">
+            <a href="#" class="page-link" >2</a>
+        </li>
+        <li class="page-item">
+            <a href="#" class="page-link" >3</a>
+        </li>
+        <li class="page-item">
+            <a href="#" class="page-link" >4</a>
+        </li>
+        <li class="page-item">
+            <a href="#" class="page-link" >Next</a>
+        </li>
+    </ul>
+</nav>
+
+<script>
+    let banksData = [];
+    let banksTitle = ['#', 'IFSC', 'Bank_id', 'Branch','Address', 'City', 'District', 'State'];
+    let dataLength = 0;
+    let page_limit = $('#selected_page_limit').val();
+    let page_number = 0;
+
+        function getUpdate(){
+            let city = $('#selected_city').val();
+            let limit = $('#selected_limit').val();
+            let offset = 0;
+            
+            let url = 'https://flye-backend-avikant.herokuapp.com/api/branches?q='+ city + '&limit=' + limit + '&offset=' + offset;
+
+            // console.log(url);
+            // console.log(selected_Data);
+
+            $.ajax({
+                method: 'GET',
+                url: url,
+                dataType: 'JSON', 
+                data: 'dataObj',
+                success: function onGetObjSuccess(outputfromserver){
+
+                    dataLength = outputfromserver.branches.length;
+
+                    str = '';
+                    start = page_number*page_limit + 1;
+                    str = initialChange();
+
+                    if(outputfromserver.branches.length != 0){
+                        str += changeTable(outputfromserver.branches, start);  
+                    }
+
+                    // $('#banks').replaceWith(str);
+                    $('table').fadeOut(400, function() {
+                        $(this).html(str).fadeIn(400);
+                        // $('#page_table').DataTable();
+                    });
+                            
+                },
+                error: function(jqxhr, textStatus, errorThrown){
+                    console.log(errorThrown);
+                }
+            });
+        }
+
+        function initialChange(){
+            str = '';
+            str += '<thead class="thead-dark">';
+            
+            str += '<tr>';
+            
+            banksTitle.forEach(element => {
+                str += '<th scope="col">' + element + '</th>';
+            });
+            str += '</tr>';
+            str += '</thead>';
+            return str;
+                    
+        }
+
+        function changeTable(banksData, start){
+            str = '';
+            str += '<tbody>';
+            cnt = start;
+
+            banksData.forEach(data => {
+                if(cnt-start+1 > page_limit){
+                    return;
+                }
+                str += '<tr>'
+                str += '<th scope="row">'+ cnt + '</th>';
+                str += '<td>' + data.ifsc + '</td>';
+                str += '<td>' + data.bank_id + '</td>';
+                str += '<td>' + data.branch  + '</td>';
+                str += '<td>' + data.address + '</td>';
+                str += '<td>' + data.city + '</td>';
+                str += '<td>' + data.district + '</td>';
+                str += '<td>' + data.state + '</td>';
+                str += '</tr>';
+                cnt++;
+            });
+
+            str += '</tbody>';
+            return str;
+        }
+        
+        function fetchData(city, limit, offset){
+            url  = 'https://flye-backend-avikant.herokuapp.com/api/branches?q='+ city + '&limit=' + limit + '&offset=' + offset;
+
+            $.ajax({
+                method: 'GET',
+                url: url,
+                dataType: 'JSON', 
+                data: 'dataObj',
+                success: function onGetObjSuccess(outputfromserver){
+                    str = '';
+                    start = page_number*page_limit + 1;
+                    str = initialChange();
+
+                    if(outputfromserver.branches.length != 0){
+                        str += changeTable(outputfromserver.branches, start);  
+                    }
+
+                    // $('#banks').replaceWith(str);
+                    $('table').fadeOut(400, function() {
+                        $(this).html(str).fadeIn(400);
+                        // $('#page_table').DataTable();
+                    });
+                },
+                error: function(jqxhr, textStatus, errorThrown){
+                    console.log(errorThrown);
+                }
+            });
+        }
+
+        // function updateHTML(branch){
+        //     str = '';
+        //     start = page_number*page_limit + 1;
+        //     str = initialChange();
+
+        //     if(branch.length != 0){
+        //         str += changeTable(branch, start);  
+        //     }
+
+        //     // $('#banks').replaceWith(str);
+        //     $('table').fadeOut(400, function() {
+        //         $(this).html(str).fadeIn(400);
+        //         // $('#page_table').DataTable();
+        //     });
+        // }
+
+        function pageUpdate(){
+
+        }
+
+        $("#myInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#banks tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+
+</script>
+
+<%- include('../partials/footer'); -%>
+
+
+
