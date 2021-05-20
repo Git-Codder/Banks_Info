@@ -1,48 +1,132 @@
 
-/* header styling */
-h1 {
-    color: green;
+.flex-container {
+display: flex;
 }
 
-/* pagination position styling */
-.pagination_section {
-    position: absolute;
-    top: 500px;
-    right: 230px;
+.flex-child {
+flex: 1;
+}  
+
+.flex-child:first-child {
+margin-right: 20px;
+} 
+
+.select:hover {
+display: block;
 }
 
-/* pagination styling */
-.pagination_section a {
-    color: black;
-    padding: 10px 18px;
-    text-decoration: none;
-}
 
-/* pagination hover effect on non-active */
-.pagination_section a:hover:not(.active) {
-    background-color: #031F3B;
-    color: white;
-}
+/* 
+    // unused links
 
-/* pagination hover effect on active*/
-a:nth-child(5) {
-    background-color: green;
-    color: white;
-}
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="//raw.github.com/botmonster/jquery-bootpag/master/lib/jquery.bootpag.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+
+*/
+
+/* 
+    // letter may be used code
+
+     <table class="table table-hover" style=" width: 66%; margin-top: 2%; margin-left: 15%; margin-left: 15%; position: relative; " >
+            <thead class="thead-dark">
+            <tr>
+                <% banksTitle.forEach(element => { %>
+                    <th scope="col"><%= element %> </th>
+                <%  }); %>
+        
+            </tr>
+            </thead>
+
+            <tbody>
+                <% var cnt = 1; %> 
+                <% banksData.forEach(data => { %>
+                    <tr>
+                        <th scope="row"><%= cnt %> </th>
+                        <td> <%= data.ifsc %> </td>
+                        <td> <%= data.bank_id %> </td>
+                        <td> <%= data.branch %> </td>
+                        <td> <%= data.address %> </td>
+                        <td> <%= data.city %> </td>
+                        <td> <%= data.district %> </td>
+                        <td> <%= data.state %> </td>
+                        
+                    </tr>
+                <%  cnt++; }); %>
+            </tbody>
+
+        </table>
+
+*/
+
+/* 
+    // May be letter usefull javascript code
+
+    app.post("/", async(req,res,body) => {
+        try {
+
+            if(city == undefined){
+                city = "Bangalore";
+            }
+
+            if(req.body.selected_city != undefined){
+                var city = '%' + req.body.selected_city.toUpperCase() + '%';
+            }else{
+                var city = 'Bangalore';
+            }
+
+
+            if(req.body.selected_city != undefined){
+                var limit = req.body.selected_limit;
+            }else{
+                var limit = 25;
+            }
+
+            if(req.body.selected_city != undefined){
+                var offset = req.body.selected_offset;
+            }else{
+                var offset = 0;
+            }
+            
+            const values = [ city, limit, offset];
+
+            const data = await pool.query("SELECT * FROM branches WHERE branch LIKE $1 "
+                                            + "or address LIKE $1 or city LIKE $1 or "
+                                            + "district LIKE $1 or state LIKE $1"
+                                            + "ORDER BY ifsc ASC LIMIT $2 OFFSET $3",
+                                            values);
+
+
+            // var options = {
+            //     method: 'GET',
+            //     url: 'https://flye-backend-avikant.herokuapp.com/api/branches?q='+ city + '&limit=' + limit + '&offset=' + offset
+            //     // url: 'https://flye-backend-avikant.herokuapp.com/api/branches/autocomplete?q=bangalore&limit=5&offset=1'
+            // };
+
+            // console.log(options.url);
+            // request(options,async(err,res,body) => {
+            //     try {
+            //         var ok = true;
+            //         console.log(body);
+            //         res.render("index.ejs",{banksData: body, banksTitle: banksTitle, ok : ok});
+            //     } catch (err) {
+            //         console.log(err.message);
+            //         res.render("index.ejs");
+            //     }
+            // });
+
+            // console.log(data);
+            var banksData = data.rows;
+            // console.log(banksData);
+            res.render("index.ejs",{banksData: banksData, banksTitle: banksTitle, ok : true});
+
+        } catch (err) {
+            console.log(err.message);
+        }
+    });
     
-a:nth-child(1) {
-    font-weight: bold;
-}
-    
-a:nth-child(7) {
-    font-weight: bold;
-}
-    
-.content {
-    margin: 50px;
-    padding: 15px;
-    width: 800px;
-    height: 200px;
-    border: 2px solid black;
-}
 
+*/

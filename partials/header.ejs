@@ -1,36 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
-
+    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title name="author" discription = "Fyle Full Stack Chalange">
         Banks  
     </title>
-    <!-- <link rel="stylesheet" type="text/css" href="home_page.css"> -->
-
-    <style>
-        .flex-container {
-    display: flex;
-}
-
-.flex-child {
-    flex: 1;
-}  
-
-.flex-child:first-child {
-    margin-right: 20px;
-} 
-
-.select:hover {
-display: block;
-}
-
-    </style>
 
     <link src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js" rel="stylesheet" />
-    <!-- <link rel="stylesheet" href="../views/index.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -39,22 +17,17 @@ display: block;
 
 
 <body>
-
-    
-    
-    <!-- <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script> -->
     <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <script type="text/javascript" charset="utf8" src="http://cdn.datatables.net/1.10.13/js/jquery.dataTables.js"></script>
 
-    <!-- <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <script src="//raw.github.com/botmonster/jquery-bootpag/master/lib/jquery.bootpag.min.js"></script> -->
-    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> -->
-    <!-- <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script> -->
+    
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 
+    <link rel="stylesheet" href="../views/index.css">
     
+
+    <!-- container for header on main page -->
     <div class="container  jumbotron" style="margin-top: 2%; margin-left: 15%; margin-left: 15%; position: relative; ">
 
         <div class="flex-container">
@@ -63,23 +36,22 @@ display: block;
                 <div class="container flex-container">
                     <div class="col-sm-4">
                         <i class="fas fa-university" style="font-size: 900%;"></i>
-                        
                     </div>
+
                     <div class="col-sm-2" style="margin: 8%;">
                         <h1>Banks</h1>
                     </div>
                 </div>
-                
             </div>
             
             
-
+            <!-- forms for selecting options -->
             <div class="flex-child">
-
                 <form >
-
                     <div class="flex-container" style="margin-bottom: 2%;">
                         <div class="flex-child green" style="width: 40%;">
+
+                            <!-- Options for city -->
                             <div class="select">
                                 <select class="selected_city" name="selected_city" id="selected_city" onchange="getUpdate()">
                                     <option value="selected_city" selected="selected">Select City</option>
@@ -93,6 +65,8 @@ display: block;
                         </div>
 
                         <div class="flex-child green" style="width: 40%;">
+
+                            <!-- Options for limit -->
                             <div class="select">
                                 <select class="selected_limit" name="selected_limit" id="selected_limit" onchange="getUpdate()">
                                     <option value="0" selected="selected">Select Limit</option>
@@ -107,8 +81,10 @@ display: block;
                     </div>
                     
                     <div class="flex-child green">
+
+                        <!-- Options for page_limit -->
                         <div class="select">
-                            <select class="selected_page_limit" name="selected_page_limit" id="selected_page_limit" onchange="pageUpdate()">
+                            <select class="selected_page_limit" name="selected_page_limit" id="selected_page_limit" onchange="getUpdate()">
                                 <option value="5" selected="selected">5</option>
                                 <option value="10">10</option>
                                 <option value="20">20</option>
@@ -117,14 +93,15 @@ display: block;
                             </select>
                         </div>
                     </div>
-
+                    
                     <div class="flex-child green">
+
+                        <!-- Form for search filter -->
                         <div class="form-group">
                         <input type="text" name="myInput" id="myInput" class="form-control form-control-sm" value="" placeholder="Search" aria-describedby="helpId">
                         </div>
                     </div>
 
-                    <!-- <input type="submit" value="Submit" /> -->
                 </form>
             
             </div>
