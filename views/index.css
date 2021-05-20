@@ -1,3 +1,43 @@
+a.nav-link {
+    display: flex;
+    align-items: center;
+}
+
+.material-icons {
+    vertical-align: middle;
+  }
+
+.star {
+    visibility:hidden;
+    font-size:40px;
+    cursor:pointer;
+    
+}
+.star:before {
+    font-family: "Font Awesome 5 Free";
+    font-size: 0.75em;
+   content: "\2606";
+   position: absolute;
+   text-align: justify;
+   vertical-align: middle;
+   visibility:visible;
+   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 10px;
+}
+.star:checked:before {
+    font-family: "Font Awesome 5 Free";
+    font-size: 0.75em;
+   content: "\2605";
+   position: absolute;
+   text-align: justify;
+   vertical-align: middle;
+   display: flex;
+  flex-direction: column;
+  justify-content: center;
+    height: 10px;
+}
 
 .flex-container {
 display: flex;

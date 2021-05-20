@@ -19,8 +19,8 @@ var bodyParser = require('body-parser'),
 
     app.get("/", async(req,res) => {
         try {
-            var ok = false;
-            res.render("index.ejs",{ok : ok});
+            var url = 'http://localhost:5000/api/branches?q=';
+            res.render("index.ejs");
         } catch (err) {
             console.log(err.message);
         }

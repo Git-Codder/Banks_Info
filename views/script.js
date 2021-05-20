@@ -4,7 +4,7 @@ let banksData = [];
 let banksTitle = ['#', 'IFSC', 'Bank_id', 'Branch','Address', 'City', 'District', 'State'];
 let dataLength = 0;
 let pageLimit = 5;
-let page_number = 0;
+var page_number = 0;
 let maxPageNumber = 0;
 let city = $('#selected_city').val();
 let limit = $('#selected_limit').val();
@@ -34,28 +34,36 @@ function getUpdate(){
             
             // compute data for paging
             dataLength = outputfromserver.rows.length;
+            if(parseInt(limit) < parseInt(pageLimit)){
+                pageLimit = Math.max(limit,1);
+            }
+
             var sum = parseInt(limit) + parseInt(pageLimit) - 1;
             maxPageNumber = parseInt(sum/pageLimit);
-    
 
-            // table header in string 
+
+            // string of Table header 
             str = '', pageNaveStr = '';
-            start = page_number*pageLimit + 1;
             str = initialChange();
+
+            // store page_number to find the value of start
+            temp = page_number;
+            // compute starting of the data 
+            if(page_number > maxPageNumber){
+                temp = temp-1;
+            }
+            start = (temp)*pageLimit + 1;
             
             // check condition if dataLength 0 or more
             if(dataLength != 0){
                 str += changeTable(outputfromserver.rows, start);
                 pageNaveStr = pageNavUpdate();
-                // console.log(pageNaveStr);
 
             }
 
             // change table data
             $('table').fadeOut(400, function() {
                 $(this).html(str).fadeIn(400);
-                
-                // $('#page_table').DataTable();
             });
             // change page nav
             $('#page-nav .pagination').html(pageNaveStr);
@@ -70,9 +78,9 @@ function getUpdate(){
 // Initial funtction to make the header of the table
 function initialChange(){
     str = '';
-    str += '<thead class="thead-dark">';
-    
+    str += '<thead class="thead-light">';
     str += '<tr>';
+    str += '<th><input id="checkall" type="checkbox" class="star" name="checkall"></th>';
     
     banksTitle.forEach(element => {
         str += '<th scope="col">' + element + '</th>';
@@ -83,6 +91,21 @@ function initialChange(){
             
 }
 
+// getString of Table row
+function getString(cnt, data){
+    str += '<tr>'
+    str += '<th><input id="checkall" type="checkbox" name="checkall"></th>'
+    str += '<th scope="row">'+ cnt + '</th>';
+    str += '<td>' + data.ifsc + '</td>';
+    str += '<td>' + data.bank_id + '</td>';
+    str += '<td>' + data.branch  + '</td>';
+    str += '<td>' + data.address + '</td>';
+    str += '<td>' + data.city + '</td>';
+    str += '<td>' + data.district + '</td>';
+    str += '<td>' + data.state + '</td>';
+    str += '</tr>';
+    return str;
+}
 
 // Function to change the Table Data dynamically
 function changeTable(banksData, start){
@@ -95,6 +118,7 @@ function changeTable(banksData, start){
             return;
         }
         str += '<tr>'
+        str += '<th><input id="cehckrow" type="checkbox" class="star" name="checkrow" style="width:1.5em"></th>'
         str += '<th scope="row">'+ cnt + '</th>';
         str += '<td>' + data.ifsc + '</td>';
         str += '<td>' + data.bank_id + '</td>';
@@ -217,7 +241,44 @@ function pageUpdate(pageText){
 // function to make the search filter through seach box
 $("#myInput").on("keyup", function() {
     var value = $(this).val().toLowerCase();
-    $("#banks tr").filter(function() {
+    $("tbody tr").filter(function() {
         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
 });
+
+
+// CheckBox 
+var fav = [];
+
+$(document).on("change", "input[name='checkall']", function () {
+    var $selectAll = $('#checkall'); // main checkbox inside table thead
+    var $table = $('.table'); // table selector 
+    var $tdCheckbox = $table.find('tbody input:checkbox'); // checboxes inside table body
+    var tdCheckboxChecked = 0; // checked checboxes
+
+    // Select or deselect all checkboxes depending on main checkbox change
+    $tdCheckbox.prop('checked', this.checked);
+});
+
+
+$(document).on("change", "input[name='checkrow']", function () {
+    var $selectAll = $('#checkall'); // main checkbox inside table thead
+    var $table = $('.table'); // table selector 
+    var $tdCheckbox = $table.find('tbody input:checkbox'); // checboxes inside table body
+    var tdCheckboxChecked = 0; // checked checboxes
+
+    // Toggle main checkbox state to checked when all checkboxes inside tbody tag is checked
+    $tdCheckbox.on('change', function(e){
+        tdCheckboxChecked = $table.find('tbody input:checkbox:checked').length; // Get count of checkboxes that is checked
+        // if all checkboxes are checked, then set property of main checkbox to "true", else set to "false"
+        if(tdCheckboxChecked >= 0){
+            $(document).find('#AddFavorite').css("visibility", "visible");
+        }else{
+            $(document).find('#AddFavorite').css("visibility", "hidden"); 
+        }
+        $selectAll.prop('checked', (tdCheckboxChecked === $tdCheckbox.length));
+    })
+
+
+});
+
