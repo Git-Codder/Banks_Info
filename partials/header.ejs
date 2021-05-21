@@ -8,7 +8,7 @@
         Banks  
     </title>
 
-    <link src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js" rel="stylesheet" />
+    <!-- <link src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js" rel="stylesheet" /> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -58,12 +58,12 @@
                             <!-- Options for city -->
                             <div class="select">
                                 <select class="selected_city" name="selected_city" id="selected_city" onchange="getUpdate()">
-                                    <option value="selected_city" selected="selected">Select City</option>
-                                    <option value="Bangalore">Bangalore</option>
-                                    <option value="Jaipur">Jaipur</option>
-                                    <option value="Delhi">Delhi</option>
-                                    <option value="Mumbai">Mumbai</option>
-                                    <option value="kolkata">Kolkata</option>
+                                    <option value="0" selected="selected">Select City</option>
+                                    <option value="1">Bangalore</option>
+                                    <option value="2">Jaipur</option>
+                                    <option value="3">Delhi</option>
+                                    <option value="4">Mumbai</option>
+                                    <option value="5">Kolkata</option>
                                 </select>
                             </div>
                         </div>
@@ -111,7 +111,7 @@
                 </form>
 
                 <div class="flex-child" style="text-align: center;">
-                    <button class="btn btn-sm btn-primary" id="AddFavorite" style="visibility: hidden;">Add Favorite</button>
+                    <button class="btn btn-sm btn-primary" id="AddFavorite" style="visibility: hidden;" onclick="addFav($(this))">Add Favorite</button>
                 </div>
                 
             

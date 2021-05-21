@@ -2,9 +2,10 @@
 // meta data
 let banksData = [];
 let banksTitle = ['#', 'IFSC', 'Bank_id', 'Branch','Address', 'City', 'District', 'State'];
+let cityArray = ['Selected_City','Bangalore', 'Jaipur', 'Delhi', 'Mumbai', 'Kolkata'];
 let dataLength = 0;
 let pageLimit = 5;
-var page_number = 0;
+var page_number = 1;
 let maxPageNumber = 0;
 let city = $('#selected_city').val();
 let limit = $('#selected_limit').val();
@@ -16,7 +17,7 @@ let URL = 'http://localhost:5000/api/branches?q=';
 function getUpdate(){
 
     // get the selected data from options
-    city = $('#selected_city').val();
+    city = cityArray[$('#selected_city').val()];
     limit = $('#selected_limit').val();
     pageLimit = $('#selected_page_limit').val();
     offset = 0;
@@ -31,28 +32,26 @@ function getUpdate(){
         dataType: 'JSON', 
         data: 'dataObj',
         success: function onGetObjSuccess(outputfromserver){
-            
+
             // compute data for paging
             dataLength = outputfromserver.rows.length;
             if(parseInt(limit) < parseInt(pageLimit)){
-                pageLimit = Math.max(limit,1);
+                pageLimit = Math.max(limit,5);
+                page_number = 1;
             }
 
             var sum = parseInt(limit) + parseInt(pageLimit) - 1;
             maxPageNumber = parseInt(sum/pageLimit);
 
+            if(page_number > maxPageNumber){
+                page_number = Math.max(maxPageNumber,1);
+            }
+            start = (page_number-1)*pageLimit + 1;
+
 
             // string of Table header 
             str = '', pageNaveStr = '';
             str = initialChange();
-
-            // store page_number to find the value of start
-            temp = page_number;
-            // compute starting of the data 
-            if(page_number > maxPageNumber){
-                temp = temp-1;
-            }
-            start = (temp)*pageLimit + 1;
             
             // check condition if dataLength 0 or more
             if(dataLength != 0){
@@ -65,14 +64,20 @@ function getUpdate(){
             $('table').fadeOut(400, function() {
                 $(this).html(str).fadeIn(400);
             });
-            // change page nav
-            $('#page-nav .pagination').html(pageNaveStr);
+            
+            // change page nav\
+            $('#page-nav .pagination').fadeOut(400, function() {
+                $('#page-nav .pagination').html(pageNaveStr).fadeIn(400);
+            });
                     
         },
         error: function(jqxhr, textStatus, errorThrown){
             console.log(errorThrown);
         }
     });
+
+    // invisible add buttion
+    $(document).find('#AddFavorite').css("visibility", "hidden"); 
 }
 
 // Initial funtction to make the header of the table
@@ -172,6 +177,7 @@ function pageNavUpdate(){
     pageNumber = page_number;
     start = Math.max(pageNumber - 2, 0);
     end = Math.min(start + 5, maxPageNumber);
+    zoom = '';
     
     // prev nav page
     status = '', method = '';
@@ -179,13 +185,14 @@ function pageNavUpdate(){
         status = ' disable';
     }else{
         method = 'onclick="pageUpdate($(this).text())"';
+        zoom = ' zoom';
     }
     pageName = 'Prev';
-    prev = '<li class="page-item' + status +' "> <button class="page-link" '+ method +'>'+ pageName +'</button> </li>';
-
+    prev = '<li class="page-item' + status + zoom +' "> <button class="page-link" '+ method +'>'+ pageName +'</button> </li>';
 
     // all original contend page
     pageStr = '';
+    zoom = ' zoom';
     for(i=start;i<=end;++i){
         if(i==pageNumber){
             status = ' active';
@@ -195,7 +202,7 @@ function pageNavUpdate(){
             if(pageNumber == i){
                 status = ' active';
             }
-            pageStr += '<li class="page-item' + status +'"> <button class="page-link" onclick="pageUpdate($(this).text())">'+ i +'</button> </li>';
+            pageStr += '<li class="page-item' + status + zoom +'"> <button class="page-link" onclick="pageUpdate($(this).text())">'+ i +'</button> </li>';
             status = '';
         }
     }
@@ -204,12 +211,14 @@ function pageNavUpdate(){
     if(pageNumber == maxPageNumber){
         status = ' disable';
         method = '';
+        zoom = '';
     }else{
         method = 'onclick="pageUpdate($(this).text())"';
         status = '';
+        zoom = ' zoom';
     }
     pageName = 'Next';
-    next = '<li class="page-item' + status +' "> <button class="page-link" '+ method +'>'+ pageName +'</button> </li>';
+    next = '<li class="page-item' + status + zoom +' "> <button class="page-link" '+ method +'>'+ pageName +'</button> </li>';
 
     return (prev + pageStr + next);
 
@@ -238,7 +247,43 @@ function pageUpdate(pageText){
     changeData(city,limit,offset);
 }
 
-// function to make the search filter through seach box
+// function to update the information of the Add Favorite button
+
+// function updateButtionInfo(tdCheckboxChecked){
+//     // get buttion 
+//     button = $(document).find('#AddFavorite');
+//     // check if any fav checked than show add fav button
+//     if(tdCheckboxChecked == 0){
+        
+//         button.css("visibility", "hidden");
+//         button.html('Add Favorite');
+//     }else{
+//         button.css("visibility", "visible");
+//     }
+// }
+
+// fucntion change the inner html of the Add Favoutite button;
+function addFav(button){
+    if(true){
+        button.html('Add Favorite');
+    }else{
+        button.html('Favorite Added!');
+    }
+}
+
+
+// CheckBox 
+var fav = Array(cityArray.length);
+var checkedBoxNumber = 0;
+
+
+
+
+
+
+// Jquery Event Listners starts.........................................//
+
+// Event Listener to make the search filter through seach box
 $("#myInput").on("keyup", function() {
     var value = $(this).val().toLowerCase();
     $("tbody tr").filter(function() {
@@ -246,10 +291,7 @@ $("#myInput").on("keyup", function() {
     });
 });
 
-
-// CheckBox 
-var fav = [];
-
+// Jquery Event Listner to handle the all check box click
 $(document).on("change", "input[name='checkall']", function () {
     var $selectAll = $('#checkall'); // main checkbox inside table thead
     var $table = $('.table'); // table selector 
@@ -258,9 +300,18 @@ $(document).on("change", "input[name='checkall']", function () {
 
     // Select or deselect all checkboxes depending on main checkbox change
     $tdCheckbox.prop('checked', this.checked);
+
+    // Get count of checkboxes that is checked  
+    tdCheckboxChecked = $table.find('tbody input:checkbox:checked').length;
+
+    // update Add Favorite buttion info
+    // updateButtionInfo(tdCheckboxChecked);
+    
+    // update favorite data info
+    // updateInfo();
 });
 
-
+// JQuery Event Listen to handle the single row checkbox click
 $(document).on("change", "input[name='checkrow']", function () {
     var $selectAll = $('#checkall'); // main checkbox inside table thead
     var $table = $('.table'); // table selector 
@@ -271,14 +322,18 @@ $(document).on("change", "input[name='checkrow']", function () {
     $tdCheckbox.on('change', function(e){
         tdCheckboxChecked = $table.find('tbody input:checkbox:checked').length; // Get count of checkboxes that is checked
         // if all checkboxes are checked, then set property of main checkbox to "true", else set to "false"
-        if(tdCheckboxChecked >= 0){
-            $(document).find('#AddFavorite').css("visibility", "visible");
-        }else{
-            $(document).find('#AddFavorite').css("visibility", "hidden"); 
-        }
         $selectAll.prop('checked', (tdCheckboxChecked === $tdCheckbox.length));
     })
-
+    
+    // Get count of checkboxes that is checked
+    tdCheckboxChecked = $table.find('tbody input:checkbox:checked').length;
+    
+    // update Add Favorite buttion info
+    // updateButtionInfo(tdCheckboxChecked);
+    
+    // update favorite data info
+    // updateInfo();
 
 });
+
 

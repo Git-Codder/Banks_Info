@@ -1,3 +1,22 @@
+/* for pagination button  */
+.pagination button {
+    border-radius: 5px;
+  }
+
+
+/* css for zoom on hover nav link paging */
+.zoom {
+    transition: transform .2s; /* Animation */
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+  }
+  
+  .zoom:hover {
+    transform: scale(1.75); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+  }
+
+
+/* css for nav link icon */
 a.nav-link {
     display: flex;
     align-items: center;
@@ -7,6 +26,8 @@ a.nav-link {
     vertical-align: middle;
   }
 
+
+/* css for change the checkbox in particular icon (star) */
 .star {
     visibility:hidden;
     font-size:40px;
@@ -43,6 +64,8 @@ a.nav-link {
 display: flex;
 }
 
+
+/* css for jumbotron flex class */
 .flex-child {
 flex: 1;
 }  
@@ -103,6 +126,7 @@ display: block;
 */
 
 /* 
+
     // May be letter usefull javascript code
 
     app.post("/", async(req,res,body) => {
@@ -168,5 +192,17 @@ display: block;
         }
     });
     
+
+*/
+
+/* 
+    // debug code
+
+    console.log("\n*****************\n");
+    console.log("start : " + start);
+    console.log("PN : "+ page_number);
+    console.log("MPN : "+maxPageNumber);
+    console.log("PL : " + pageLimit);
+    console.log("L : "+limit);
 
 */
