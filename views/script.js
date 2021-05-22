@@ -1,8 +1,10 @@
 
+// const { json } = require("body-parser");
+
 // meta data
 let banksData = [];
 let banksTitle = ['#', 'IFSC', 'Bank_id', 'Branch','Address', 'City', 'District', 'State'];
-let cityArray = ['Selected_City','Bangalore', 'Jaipur', 'Delhi', 'Mumbai', 'Kolkata'];
+let cityArray = ['selected_city','bangalore', 'jaipur', 'delhi', 'mumbai', 'kolkata'];
 let dataLength = 0;
 let pageLimit = 5;
 var page_number = 1;
@@ -82,10 +84,25 @@ function getUpdate(){
 
 // Initial funtction to make the header of the table
 function initialChange(){
+    // check condition if all data is facoutrite or not
+    checkall = '';
+    start = (parseInt(page_number) - 1)*pageLimit + 1;
+
+    for(i=start;i<(parseInt(start) + parseInt(pageLimit));i++){
+        if(i==start){
+            checkall = ' checked';
+        }
+        if(fav[cityMap[city]].has(i)==false || fav[cityMap[city]].get(i) == false){
+            checkall = '';
+            break;
+        }
+    }
+
+
     str = '';
     str += '<thead class="thead-light">';
     str += '<tr>';
-    str += '<th><input id="checkall" type="checkbox" class="star" name="checkall"></th>';
+    str += '<th><input id="checkall" type="checkbox" class="star" name="checkall"'+ checkall + ' ></th>';
     
     banksTitle.forEach(element => {
         str += '<th scope="col">' + element + '</th>';
@@ -117,14 +134,18 @@ function changeTable(banksData, start){
     str = '';
     str += '<tbody>';
     cnt = start;
+    checked = '';
 
     banksData.forEach(data => {
         if(cnt-start+1 > pageLimit){
             return;
         }
+        if(fav[cityMap[city]].get(parseInt(cnt))){
+            checked = ' checked';
+        }
         str += '<tr>'
-        str += '<th><input id="cehckrow" type="checkbox" class="star" name="checkrow" style="width:1.5em"></th>'
-        str += '<th scope="row">'+ cnt + '</th>';
+        str += '<td><input id="cehckrow" type="checkbox" class="star" name="checkrow" style="width:1.5em"'+ checked + ' ></th>'
+        str += '<td scope="row">'+ cnt + '</th>';
         str += '<td>' + data.ifsc + '</td>';
         str += '<td>' + data.bank_id + '</td>';
         str += '<td>' + data.branch  + '</td>';
@@ -134,6 +155,7 @@ function changeTable(banksData, start){
         str += '<td>' + data.state + '</td>';
         str += '</tr>';
         cnt++;
+        checked = '';
     });
 
     str += '</tbody>';
@@ -247,39 +269,30 @@ function pageUpdate(pageText){
     changeData(city,limit,offset);
 }
 
-// function to update the information of the Add Favorite button
-
-// function updateButtionInfo(tdCheckboxChecked){
-//     // get buttion 
-//     button = $(document).find('#AddFavorite');
-//     // check if any fav checked than show add fav button
-//     if(tdCheckboxChecked == 0){
-        
-//         button.css("visibility", "hidden");
-//         button.html('Add Favorite');
-//     }else{
-//         button.css("visibility", "visible");
-//     }
-// }
-
-// fucntion change the inner html of the Add Favoutite button;
-function addFav(button){
-    if(true){
-        button.html('Add Favorite');
-    }else{
-        button.html('Favorite Added!');
-    }
-}
-
 
 // CheckBox 
 var fav = Array(cityArray.length);
 var checkedBoxNumber = 0;
+let cityMap = new Map()
 
+// map values of city and initialise fav array
+for(i=0;i<cityArray.length;++i){
+    cityMap[cityArray[i]] = i;
+    fav[i] = new Map();
+    fav[i].set(0,false);
+}
 
+// update information of the fav array
+function updateInfo(flag, id, upto){
 
-
-
+    for(i=id;i<parseInt(id)+parseInt(upto);++i){
+        if(flag){
+            fav[cityMap[city]].set(i,true);
+        }else{
+            fav[cityMap[city]].set(i,false);
+        }
+    }
+}
 
 // Jquery Event Listners starts.........................................//
 
@@ -307,16 +320,29 @@ $(document).on("change", "input[name='checkall']", function () {
     // update Add Favorite buttion info
     // updateButtionInfo(tdCheckboxChecked);
     
+    // find the first check box value and number of all checkbox
+    var id = (parseInt(page_number)-1)*pageLimit + 1;
     // update favorite data info
-    // updateInfo();
+
+    // check if checkbox checked or unchcked and update info according to that
+    if($("input[name='checkall']").prop('checked')){
+        // update Add Favorite buttion info
+        updateInfo(true,id,pageLimit);
+    }else{
+        // update Add Favorite buttion info
+        updateInfo(false,id,pageLimit);
+    }
+
 });
 
 // JQuery Event Listen to handle the single row checkbox click
 $(document).on("change", "input[name='checkrow']", function () {
+
     var $selectAll = $('#checkall'); // main checkbox inside table thead
     var $table = $('.table'); // table selector 
     var $tdCheckbox = $table.find('tbody input:checkbox'); // checboxes inside table body
     var tdCheckboxChecked = 0; // checked checboxes
+
 
     // Toggle main checkbox state to checked when all checkboxes inside tbody tag is checked
     $tdCheckbox.on('change', function(e){
@@ -325,15 +351,56 @@ $(document).on("change", "input[name='checkrow']", function () {
         $selectAll.prop('checked', (tdCheckboxChecked === $tdCheckbox.length));
     })
     
-    // Get count of checkboxes that is checked
-    tdCheckboxChecked = $table.find('tbody input:checkbox:checked').length;
+    // // Get count of checkboxes that is checked
+    // tdCheckboxChecked = $table.find('tbody input:checkbox:checked').length;
     
     // update Add Favorite buttion info
     // updateButtionInfo(tdCheckboxChecked);
+
+    // row = this.parentNode.parentNode
+    var row = $(this).closest("tr")[0];
+    var id  = parseInt(row.cells[1].innerHTML);
+
     
-    // update favorite data info
-    // updateInfo();
+
+    // check if checkbox checked or unchcked and update info according to that
+    if(fav[cityMap[city]].get(parseInt(id))){
+        // update Add Favorite buttion info
+        fav[cityMap[city]].set(id,false);
+    }else{
+        // update Add Favorite buttion info
+        fav[cityMap[city]].set(id,true);
+    }
 
 });
+
+
+
+
+// funtions to save the page state on local storage after page reload
+function save() {
+    for (i = 0; i < cityArray.length; i++) {
+        localStorage.setItem(cityArray[i],JSON.stringify(Array.from(fav[i].entries())));
+    }
+}
+
+// function to load the data after reload page
+function load() {
+    for (i = 0; i < fav.length; i++) {
+        fav[i] = new Map(JSON.parse(localStorage.getItem(cityArray[i])));
+    }
+    localStorage.clear();
+}
+
+// call function at starting to load the saved data at client side
+load();
+
+// call save function to save the page state before thr page refresh
+window.onbeforeunload = function(event){
+    // event.preventDefault();
+    save.apply();
+    return event.returnValue = "Are you sure you want to exit?";
+};
+
 
 

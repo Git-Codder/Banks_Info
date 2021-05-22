@@ -206,3 +206,35 @@ display: block;
     console.log("L : "+limit);
 
 */
+
+/*
+    // Add Favorite button Funtion
+    // function to update the information of the Add Favorite button
+
+    // function updateButtionInfo(tdCheckboxChecked){
+    //     // get buttion 
+    //     button = $(document).find('#AddFavorite');
+    //     // check if any fav checked than show add fav button
+    //     if(tdCheckboxChecked == 0){
+            
+    //         button.css("visibility", "hidden");
+    //         button.html('Add Favorite');
+    //     }else{
+    //         button.css("visibility", "visible");
+    //     }
+    // }
+
+    // // fucntion change the inner html of the Add Favoutite button;
+    // function addFav(button){
+    //     if(true){
+    //         button.html('Add Favorite');
+    //     }else{
+    //         button.html('Favorite Added!');
+    //     }
+    // }
+
+
+*/
+
+
+
