@@ -11,9 +11,10 @@ let city = $('#selected_city').val();
 let limit = $('#selected_limit').val();
 let offset = 0;
 let URL = 'http://localhost:5000/api/branches?q=';
-// 'https://flye-backend-avikant.herokuapp.com/api/branches?q='
 
-
+let order = 'asc';
+let sortColNumber = 0;
+var sortColId  = '#';
 
 
 //................................Table Info fetiching and updating dynamically Logic Implemented............................//
@@ -70,10 +71,16 @@ function getUpdate(){
                 $(this).html(str).fadeIn(400);
             });
             
-            // change page nav\
+            
+            // change page nav
             $('#page-nav .pagination').fadeOut(400, function() {
                 $('#page-nav .pagination').html(pageNaveStr).fadeIn(400);
+                // sort the data
+                // call the sort function to maintain the data before page reload or page change
+                sortTable(order,sortColNumber);
             });
+
+            
                     
         },
         error: function(jqxhr, textStatus, errorThrown){
@@ -101,11 +108,11 @@ function initialChange(){
 
     // sort triangle icon
     downIcon = ' &#9660 ';
-    upIcon = ' &#9650 ';
-    var method = ' onclick="sortBy($(this))"';
+    upIcon = ' ';
+    var method = ' onclick="sortBy($(this).html(), $(this).prevAll().length)"';
 
     if(parseInt(limit)==0){
-        sortIcon = ' '
+        upIcon = ' '
         method = '';
     }
 
@@ -115,13 +122,20 @@ function initialChange(){
     str += '<th><input id="checkall" type="checkbox" class="star" name="checkall"'+ checkall + ' ></th>';
     
     var i = 0;
+    var value = ' value="0" ';
     banksTitle.forEach(element => {
-        if(i==0){
-            upIcon = ' &#9650 '
-            value = ' value="1" ';
+        if(i+1==parseInt(sortColNumber)){
+            if(order == 'asc'){
+                value = ' value="1" ';
+                upIcon = ' &#9650 '
+            }else{
+                value = ' value="-1" ';
+                upIcon = ' &#9660 '
+            }
+            
         }
 
-        str += '<th scope="col" id="sortCol" ' + value +  method + ' > ' + element + upIcon + '</th>'
+        str += '<th scope="col" id="sortCol" ' + value +  method + ' > ' + element + upIcon + '</th>';
 
         upIcon = '';
         value = ' value="0" ';
@@ -206,6 +220,9 @@ function changeData(city, limit, offset){
 
             $('table').fadeOut(400, function() {
                 $(this).html(str).fadeIn(400);
+                // sort the data
+                // call the sort function to maintain the data before page reload or page change
+                sortTable(order,sortColNumber);
             });
             $('#page-nav .pagination').html(pageNaveStr);
         },
@@ -301,17 +318,12 @@ function pageUpdate(pageText){
 //.....................................Table Sort By column Logic Implemented....................................//
 
 // onclick function to sort table according clicked column
-function sortBy(target){
-
-    // get the html text of changed col
-    var text = target.html();
+function sortBy(text,colNumber){
+    // console.log("target : " + text);
 
     // triangle icon of sort indication
     downIcon = ' &#9660 ';
     upIcon = ' &#9650 ';
-
-    var order = 'asc';
-    var elementsNumber = 0;
 
     
     // update the header info according sort called on particular column
@@ -328,12 +340,12 @@ function sortBy(target){
                 col[i].setAttribute('value','-1');
                 col[i].innerHTML = banksTitle[i-1] + downIcon;
             }else if(col[i].getAttribute('value') == '-1'){
-                order = 'desc';
+                order = 'asc';
                 col[i].setAttribute('value','1');
                 col[i].innerHTML = banksTitle[i-1] + upIcon;
             }   
         }else{
-            if(col[i].getAttribute('value') == '1' || col[i].getAttribute('value')=='-1'){
+            if(col[i].getAttribute('value') == '1' || col[i].getAttribute('value')== '-1'){
                 col[i].setAttribute('value','0');
                 col[i].innerHTML = banksTitle[i-1];
             }
@@ -341,10 +353,11 @@ function sortBy(target){
     }
 
     // get the length of the data
-    elementsNumber = target.prevAll().length;
+    sortColNumber = colNumber;
+    sortColId = text;
 
     // call the sort function 
-    sortTable(order,elementsNumber);
+    sortTable(order,sortColNumber);
 }
 
 // function to sort the table data with columwise
@@ -354,7 +367,7 @@ function sortTable(order,n) {
     var f = (order == 'asc')?1:-1;
 
     // get all row value of particular column
-    var rows = $('#page_table tbody  tr').get();
+    var rows = $('#page_table tbody tr').get();
 
     // function perform swaping after condition check
     rows.sort(function(a, b) {
@@ -517,6 +530,9 @@ function save() {
         }
         
     }
+    localStorage.setItem("order",order);
+    localStorage.setItem("sortColNumber", sortColNumber);
+    localStorage.setItem("sortColId", sortColId);
     // localStorage.setItem("selectAllCheckbox",JSON.stringify(Array.from(allCheckBox.entries())))
 }
 
@@ -530,6 +546,9 @@ function load() {
         }
         
     }
+    order = localStorage.getItem("order");
+    sortColNumber = localStorage.getItem("sortColNumber");
+    sortColId = localStorage.getItem("sortColId");
     localStorage.clear();
 }
 
