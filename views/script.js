@@ -86,18 +86,15 @@ function getUpdate(){
 function initialChange(){
     // check condition if all data is facoutrite or not
     checkall = '';
-    start = (parseInt(page_number) - 1)*pageLimit + 1;
 
-    for(i=start;i<(parseInt(start) + parseInt(pageLimit));i++){
-        if(i==start){
+    // get the key value for store data in map
+    if(limit>0){
+        var key = city + page_number + "with" + pageLimit;
+        console.log("initial key : "+ key);
+        if(fav[cityArray.length].get(key)){
             checkall = ' checked';
         }
-        if(fav[cityMap[city]].has(i)==false || fav[cityMap[city]].get(i) == false){
-            checkall = '';
-            break;
-        }
     }
-
 
     str = '';
     str += '<thead class="thead-light">';
@@ -140,7 +137,7 @@ function changeTable(banksData, start){
         if(cnt-start+1 > pageLimit){
             return;
         }
-        if(fav[cityMap[city]].get(parseInt(cnt))){
+        if(fav[cityMap[city]].get(data.ifsc)){
             checked = ' checked';
         }
         str += '<tr>'
@@ -271,15 +268,17 @@ function pageUpdate(pageText){
 
 
 // CheckBox 
-var fav = Array(cityArray.length);
+var fav = Array(cityArray.length + 1);
 var checkedBoxNumber = 0;
 let cityMap = new Map()
 
 // map values of city and initialise fav array
-for(i=0;i<cityArray.length;++i){
-    cityMap[cityArray[i]] = i;
+for(i=0;i<cityArray.length + 1;++i){
     fav[i] = new Map();
-    fav[i].set(0,false);
+    if(i<cityArray.length){
+        cityMap[cityArray[i]] = i;  
+        fav[i].set(0,false);
+    }
 }
 
 // update information of the fav array
@@ -317,20 +316,33 @@ $(document).on("change", "input[name='checkall']", function () {
     // Get count of checkboxes that is checked  
     tdCheckboxChecked = $table.find('tbody input:checkbox:checked').length;
 
-    // update Add Favorite buttion info
-    // updateButtionInfo(tdCheckboxChecked);
-    
-    // find the first check box value and number of all checkbox
-    var id = (parseInt(page_number)-1)*pageLimit + 1;
-    // update favorite data info
+    // get the key value for store data in map
+    var key = city + page_number + "with" + pageLimit;
 
+    // update favorite data info
     // check if checkbox checked or unchcked and update info according to that
     if($("input[name='checkall']").prop('checked')){
-        // update Add Favorite buttion info
-        updateInfo(true,id,pageLimit);
+
+        // iterate all checked box and update Info
+        $("tbody input:checkbox[name=checkrow]:checked").each(function(){
+            var row = $(this).closest("tr")[0];
+            var id  = row.cells[2].innerHTML;
+            fav[cityMap[city]].set(id,true);
+        });
+        
+        // update checkboxall status
+        fav[cityArray.length].set(key,true);
     }else{
-        // update Add Favorite buttion info
-        updateInfo(false,id,pageLimit);
+
+        // iterate all un checked box and update Info
+        $("tbody input:checkbox[name=checkrow]:not(:checked)").each(function(){
+            var row = $(this).closest("tr")[0];
+            var id  = row.cells[2].innerHTML;
+            fav[cityMap[city]].set(id,false);
+        });
+
+        // update checkboxall status
+        fav[cityArray.length].set(key,false);
     }
 
 });
@@ -349,22 +361,19 @@ $(document).on("change", "input[name='checkrow']", function () {
         tdCheckboxChecked = $table.find('tbody input:checkbox:checked').length; // Get count of checkboxes that is checked
         // if all checkboxes are checked, then set property of main checkbox to "true", else set to "false"
         $selectAll.prop('checked', (tdCheckboxChecked === $tdCheckbox.length));
+
+        // get the key value for store data in map
+        var key = city + page_number + "with" + pageLimit;
+        fav[cityArray.length].set(key,(tdCheckboxChecked === $tdCheckbox.length)); // update info
+
     })
-    
-    // // Get count of checkboxes that is checked
-    // tdCheckboxChecked = $table.find('tbody input:checkbox:checked').length;
-    
-    // update Add Favorite buttion info
-    // updateButtionInfo(tdCheckboxChecked);
 
     // row = this.parentNode.parentNode
     var row = $(this).closest("tr")[0];
-    var id  = parseInt(row.cells[1].innerHTML);
-
-    
+    var id  = row.cells[2].innerHTML;
 
     // check if checkbox checked or unchcked and update info according to that
-    if(fav[cityMap[city]].get(parseInt(id))){
+    if(fav[cityMap[city]].get(id)){
         // update Add Favorite buttion info
         fav[cityMap[city]].set(id,false);
     }else{
@@ -379,28 +388,39 @@ $(document).on("change", "input[name='checkrow']", function () {
 
 // funtions to save the page state on local storage after page reload
 function save() {
-    for (i = 0; i < cityArray.length; i++) {
-        localStorage.setItem(cityArray[i],JSON.stringify(Array.from(fav[i].entries())));
+    for (i = 0; i < cityArray.length + 1; i++) {
+        if(i < cityArray.length){
+            localStorage.setItem(cityArray[i],JSON.stringify(Array.from(fav[i].entries())));
+        }else{
+            localStorage.setItem("allCheckboxData",JSON.stringify(Array.from(fav[i].entries())));
+        }
+        
     }
+    // localStorage.setItem("selectAllCheckbox",JSON.stringify(Array.from(allCheckBox.entries())))
 }
 
 // function to load the data after reload page
 function load() {
-    for (i = 0; i < fav.length; i++) {
-        fav[i] = new Map(JSON.parse(localStorage.getItem(cityArray[i])));
+    for (i = 0; i < cityArray.length + 1; i++) {
+        if(i < cityArray.length){
+            fav[i] = new Map(JSON.parse(localStorage.getItem(cityArray[i])));
+        }else{
+            fav[i] = new Map(JSON.parse(localStorage.getItem("allCheckboxData")));
+        }
+        
     }
     localStorage.clear();
 }
 
 // call function at starting to load the saved data at client side
-load();
+// load();
 
 // call save function to save the page state before thr page refresh
-window.onbeforeunload = function(event){
-    // event.preventDefault();
-    save.apply();
-    return event.returnValue = "Are you sure you want to exit?";
-};
+// window.onbeforeunload = function(event){
+//     // event.preventDefault();
+//     save.apply();
+//     return event.returnValue = "Are you sure you want to exit?";
+// };
 
 
 
