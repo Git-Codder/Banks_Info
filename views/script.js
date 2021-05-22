@@ -1,7 +1,5 @@
 
-// const { json } = require("body-parser");
-
-// meta data
+//....................................... meta data.......................................//
 let banksData = [];
 let banksTitle = ['#', 'IFSC', 'Bank_id', 'Branch','Address', 'City', 'District', 'State'];
 let cityArray = ['selected_city','bangalore', 'jaipur', 'delhi', 'mumbai', 'kolkata'];
@@ -14,6 +12,11 @@ let limit = $('#selected_limit').val();
 let offset = 0;
 let URL = 'http://localhost:5000/api/branches?q=';
 // 'https://flye-backend-avikant.herokuapp.com/api/branches?q='
+
+
+
+
+//................................Table Info fetiching and updating dynamically Logic Implemented............................//
 
 // function to getUpdate if choose Option in selected form
 function getUpdate(){
@@ -90,10 +93,20 @@ function initialChange(){
     // get the key value for store data in map
     if(limit>0){
         var key = city + page_number + "with" + pageLimit;
-        console.log("initial key : "+ key);
+        
         if(fav[cityArray.length].get(key)){
             checkall = ' checked';
         }
+    }
+
+    // sort triangle icon
+    downIcon = ' &#9660 ';
+    upIcon = ' &#9650 ';
+    var method = ' onclick="sortBy($(this))"';
+
+    if(parseInt(limit)==0){
+        sortIcon = ' '
+        method = '';
     }
 
     str = '';
@@ -101,9 +114,20 @@ function initialChange(){
     str += '<tr>';
     str += '<th><input id="checkall" type="checkbox" class="star" name="checkall"'+ checkall + ' ></th>';
     
+    var i = 0;
     banksTitle.forEach(element => {
-        str += '<th scope="col">' + element + '</th>';
+        if(i==0){
+            upIcon = ' &#9650 '
+            value = ' value="1" ';
+        }
+
+        str += '<th scope="col" id="sortCol" ' + value +  method + ' > ' + element + upIcon + '</th>'
+
+        upIcon = '';
+        value = ' value="0" ';
+        i++;
     });
+
     str += '</tr>';
     str += '</thead>';
     return str;
@@ -134,7 +158,7 @@ function changeTable(banksData, start){
     checked = '';
 
     banksData.forEach(data => {
-        if(cnt-start+1 > pageLimit){
+        if(cnt-start+1 > pageLimit || cnt>limit){
             return;
         }
         if(fav[cityMap[city]].get(data.ifsc)){
@@ -142,14 +166,14 @@ function changeTable(banksData, start){
         }
         str += '<tr>'
         str += '<td><input id="cehckrow" type="checkbox" class="star" name="checkrow" style="width:1.5em"'+ checked + ' ></th>'
-        str += '<td scope="row">'+ cnt + '</th>';
-        str += '<td>' + data.ifsc + '</td>';
-        str += '<td>' + data.bank_id + '</td>';
-        str += '<td>' + data.branch  + '</td>';
-        str += '<td>' + data.address + '</td>';
-        str += '<td>' + data.city + '</td>';
-        str += '<td>' + data.district + '</td>';
-        str += '<td>' + data.state + '</td>';
+        str += '<td scope="row" style="min-width:100px">'+ cnt + '</th>';
+        str += '<td style="min-width:150px" >' + data.ifsc + '</td>';
+        str += '<td style="min-width:150px" >' + data.bank_id + '</td>';
+        str += '<td style="min-width:100px" >' + data.branch  + '</td>';
+        str += '<td style="min-width:100px" >' + data.address + '</td>';
+        str += '<td style="min-width:100px" >' + data.city + '</td>';
+        str += '<td style="min-width:150px" >' + data.district + '</td>';
+        str += '<td style="min-width:100px" >' + data.state + '</td>';
         str += '</tr>';
         cnt++;
         checked = '';
@@ -190,6 +214,11 @@ function changeData(city, limit, offset){
         }
     });
 }
+
+
+
+
+//..................................................paging Nav bar updation Logic Implement..........................//
 
 // function to update page-nav after select page at the bottom in pag-nav 
 function pageNavUpdate(){
@@ -267,6 +296,102 @@ function pageUpdate(pageText){
 }
 
 
+
+
+//.....................................Table Sort By column Logic Implemented....................................//
+
+// onclick function to sort table according clicked column
+function sortBy(target){
+
+    // get the html text of changed col
+    var text = target.html();
+
+    // triangle icon of sort indication
+    downIcon = ' &#9660 ';
+    upIcon = ' &#9650 ';
+
+    var order = 'asc';
+    var elementsNumber = 0;
+
+    
+    // update the header info according sort called on particular column
+    var col = document.getElementById('page_table').rows[0].cells;
+    for(i=0;i<col.length;++i){
+        if(col[i].innerHTML == text){
+            if(col[i].getAttribute('value') == '0'){
+                order = 'asc';
+                col[i].setAttribute('value','1');
+                col[i].innerHTML = banksTitle[i-1] + upIcon;
+            }
+            else if(col[i].getAttribute('value') == '1'){
+                order = 'desc';
+                col[i].setAttribute('value','-1');
+                col[i].innerHTML = banksTitle[i-1] + downIcon;
+            }else if(col[i].getAttribute('value') == '-1'){
+                order = 'desc';
+                col[i].setAttribute('value','1');
+                col[i].innerHTML = banksTitle[i-1] + upIcon;
+            }   
+        }else{
+            if(col[i].getAttribute('value') == '1' || col[i].getAttribute('value')=='-1'){
+                col[i].setAttribute('value','0');
+                col[i].innerHTML = banksTitle[i-1];
+            }
+        }
+    }
+
+    // get the length of the data
+    elementsNumber = target.prevAll().length;
+
+    // call the sort function 
+    sortTable(order,elementsNumber);
+}
+
+// function to sort the table data with columwise
+function sortTable(order,n) {
+
+    // check the order of the elements
+    var f = (order == 'asc')?1:-1;
+
+    // get all row value of particular column
+    var rows = $('#page_table tbody  tr').get();
+
+    // function perform swaping after condition check
+    rows.sort(function(a, b) {
+        var A = getVal(a);
+        var B = getVal(b);
+
+        if(A < B) {
+            return -1*f;
+        }
+        if(A > B) {
+            return 1*f;
+        }
+        return 0;
+    });
+
+
+    // function to get the value from html 
+    function getVal(elm){
+        var v = $(elm).children('td').eq(n).text().toUpperCase();
+        if($.isNumeric(v)){
+            v = parseInt(v,10);
+        }
+        return v;
+    }
+
+    // function to swap the data of table to ordered data
+    $.each(rows, function(index, row) {
+		$('#page_table').children('tbody').append(row);
+	});
+   
+}
+
+
+
+
+// .........................................Fav Data Saving logic Implemented................................................//
+
 // CheckBox 
 var fav = Array(cityArray.length + 1);
 var checkedBoxNumber = 0;
@@ -281,19 +406,11 @@ for(i=0;i<cityArray.length + 1;++i){
     }
 }
 
-// update information of the fav array
-function updateInfo(flag, id, upto){
 
-    for(i=id;i<parseInt(id)+parseInt(upto);++i){
-        if(flag){
-            fav[cityMap[city]].set(i,true);
-        }else{
-            fav[cityMap[city]].set(i,false);
-        }
-    }
-}
 
-// Jquery Event Listners starts.........................................//
+
+
+// ......................................Jquery Event Listners starts.........................................//
 
 // Event Listener to make the search filter through seach box
 $("#myInput").on("keyup", function() {
@@ -386,6 +503,10 @@ $(document).on("change", "input[name='checkrow']", function () {
 
 
 
+
+
+// .....................................Save & Load Function to sotre the page state ........................................//
+
 // funtions to save the page state on local storage after page reload
 function save() {
     for (i = 0; i < cityArray.length + 1; i++) {
@@ -413,14 +534,15 @@ function load() {
 }
 
 // call function at starting to load the saved data at client side
-// load();
+load();
 
 // call save function to save the page state before thr page refresh
-// window.onbeforeunload = function(event){
-//     // event.preventDefault();
-//     save.apply();
-//     return event.returnValue = "Are you sure you want to exit?";
-// };
+window.onbeforeunload = function(event){
+    // event.preventDefault();
+    save.apply();
+    return event.returnValue = "Are you sure you want to exit?";
+};
+
 
 
 
