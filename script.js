@@ -10,7 +10,7 @@ let maxPageNumber = 0;
 let city = 0;
 let limit = 0;
 let offset = 0;
-let URL = 'http://localhost:5000/api/branches?q=';
+let URL = 'https://banks-branches-api.herokuapp.com/api/branches?q=';
 
 let order = 'asc';
 let sortColNumber = 0;
