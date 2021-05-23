@@ -128,18 +128,24 @@ function getUpdate(){
             }
 
             // change table data
-            $('table').fadeOut(400, function() {
-                $(this).html(str).fadeIn(400);
-            });
+            // $('table').fadeOut(400, function() {
+            //     $(this).html(str).fadeIn(400);
+            // });
+
+            $(table).html(str).fadeIn(400);
+            $('#page-nav .pagination').html(pageNaveStr).fadeIn(400);
+                // sort the data
+                // call the sort function to maintain the data before page reload or page change
+            sortTable(order,sortColNumber);
             
             
             // change page nav
-            $('#page-nav .pagination').fadeOut(400, function() {
-                $('#page-nav .pagination').html(pageNaveStr).fadeIn(400);
-                // sort the data
-                // call the sort function to maintain the data before page reload or page change
-                sortTable(order,sortColNumber);
-            });
+            // $('#page-nav .pagination').fadeOut(400, function() {
+            //     $('#page-nav .pagination').html(pageNaveStr).fadeIn(400);
+            //     // sort the data
+            //     // call the sort function to maintain the data before page reload or page change
+            //     sortTable(order,sortColNumber);
+            // });
 
             
                     
