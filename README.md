@@ -29,12 +29,13 @@ curl -i -H "Accept: application/json" https://banks-branches-api.herokuapp.com/a
 ## Banks Info Featurs
 - [X] Single Page Application
 - [X] Data Fetching Dynamically 
-- [X] Add Fav Bank Funtionality 
-- [X] Availability For Choosing City, Data Limt, Page Number 
-- [X] Sorting Feature via Each Column Dynamically Using DSA Concept
+- [X] Add Fav Bank Funtionality Using DSA Concept Without Any Bootstrap Library
+- [X] Availability For Choosing City, Data Limt, Page Number Using DSA Concept Without Any Bootstrap Library
+- [X] Sorting Feature via Each Column Dynamically Using DSA Concept Without Any Bootstrap Library
 - [X] Pagination Using DataStructure & Algorithem Concept Without Any Bootstrap Library
 - [X] Page State Saving in any City, Sorting Order, Current Page Using DSA concept Without Bootstrap Library
 - [X] Start Site In Same Page State Where Left Befor Window Load 
+
 - [x] All Above Concept Made With DSA Concept Without Using Direct Bootstrap DataTable
 
 
