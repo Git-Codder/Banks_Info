@@ -7,8 +7,8 @@ let dataLength = 0;
 let pageLimit = 5;
 var page_number = 1;
 let maxPageNumber = 0;
-let city = $('#selected_city').val();
-let limit = $('#selected_limit').val();
+let city = 0;
+let limit = 0;
 let offset = 0;
 let URL = 'http://localhost:5000/api/branches?q=';
 
@@ -17,18 +17,79 @@ let sortColNumber = 0;
 var sortColId  = '#';
 
 
+
+//...............................................helper Funtion.................................................//
+
+// upadate simple Options data
+function updateOptionData(){
+
+    limitData[city] = limit;
+    pageNumberData[city] = page_number;
+    pageLimitData[city] = pageLimit;
+
+    orderData[city] = order;
+    sortColIDData[city] = sortColId;
+    sortColNumberData[city] = sortColNumber;
+}
+ 
+// fetch simple option data
+function fetchOptionData(){
+    limit = limitData[city];
+    pageLimit = pageLimitData[city];
+    page_number = pageNumberData[city];
+
+    order = orderData[city];
+    sortColId = sortColIDData[city];
+    sortColNumber = sortColNumberData[city];
+        
+}
+
+
+
+
 //................................Table Info fetiching and updating dynamically Logic Implemented............................//
 
 // function to getUpdate if choose Option in selected form
 function getUpdate(){
 
     // get the selected data from options
-    city = cityArray[$('#selected_city').val()];
-    limit = $('#selected_limit').val();
-    pageLimit = $('#selected_page_limit').val();
-    offset = 0;
     
-    let url = URL + city + '&limit=' + limit + '&offset=' + offset;
+    var temp = $('#selected_city').val();
+    if(temp == city){
+        tempLimit = $('#selected_limit').val();
+        tempPageLimit = $('#selected_page_limit').val();
+
+        if(tempLimit == limit && tempPageLimit == pageLimit){
+            
+        }else if(tempPageLimit == pageLimit){
+            limit = tempLimit;
+            limitData[city] = limit;
+        }else{
+            pageLimit = tempPageLimit;
+            pageLimitData[city] = pageLimit;
+        }
+
+        order = orderData[city];
+        sortColId = sortColIDData[city];
+        sortColNumber = sortColNumberData[city];
+
+        // updatea all data;
+        updateOptionData();
+    }else{
+        city = temp;
+
+        // get all data
+        fetchOptionData();
+
+        $("#selected_limit").val(limit);
+        $("#selected_page_limit").val(pageLimit);
+    }
+    
+    offset = 0;
+
+    cityStr = cityArray[city];
+    
+    let url = URL + cityStr + '&limit=' + limit + '&offset=' + offset;
 
 
     // call API using AJAX to grap data from in JSON formate
@@ -92,14 +153,20 @@ function getUpdate(){
     $(document).find('#AddFavorite').css("visibility", "hidden"); 
 }
 
+
+
+
+//...................................................Data Replacement Logic....................................................//
+
 // Initial funtction to make the header of the table
 function initialChange(){
+
     // check condition if all data is facoutrite or not
     checkall = '';
 
     // get the key value for store data in map
     if(limit>0){
-        var key = city + page_number + "with" + pageLimit;
+        var key = cityArray[city] + page_number + "with" + pageLimit;
         
         if(fav[cityArray.length].get(key)){
             checkall = ' checked';
@@ -175,7 +242,7 @@ function changeTable(banksData, start){
         if(cnt-start+1 > pageLimit || cnt>limit){
             return;
         }
-        if(fav[cityMap[city]].get(data.ifsc)){
+        if(fav[city].get(data.ifsc)){
             checked = ' checked';
         }
         str += '<tr>'
@@ -307,6 +374,9 @@ function pageUpdate(pageText){
     pageLimit = $('#selected_page_limit').val();
     offset = Math.max((currentPage-1)*pageLimit,0);
     page_number = currentPage;
+
+    // update page_number in pageNumberData
+    pageNumberData[city] = page_number;
     
     // change data 
     changeData(city,limit,offset);
@@ -353,11 +423,12 @@ function sortBy(text,colNumber){
     }
 
     // get the length of the data
-    sortColNumber = colNumber;
-    sortColId = text;
+    sortColNumberData[city] = colNumber;
+    sortColIDData[city] = text;
+    orderData[city] = order;
 
     // call the sort function 
-    sortTable(order,sortColNumber);
+    sortTable(order,colNumber);
 }
 
 // function to sort the table data with columwise
@@ -447,7 +518,7 @@ $(document).on("change", "input[name='checkall']", function () {
     tdCheckboxChecked = $table.find('tbody input:checkbox:checked').length;
 
     // get the key value for store data in map
-    var key = city + page_number + "with" + pageLimit;
+    var key = cityArray[city] + page_number + "with" + pageLimit;
 
     // update favorite data info
     // check if checkbox checked or unchcked and update info according to that
@@ -457,7 +528,7 @@ $(document).on("change", "input[name='checkall']", function () {
         $("tbody input:checkbox[name=checkrow]:checked").each(function(){
             var row = $(this).closest("tr")[0];
             var id  = row.cells[2].innerHTML;
-            fav[cityMap[city]].set(id,true);
+            fav[city].set(id,true);
         });
         
         // update checkboxall status
@@ -468,7 +539,7 @@ $(document).on("change", "input[name='checkall']", function () {
         $("tbody input:checkbox[name=checkrow]:not(:checked)").each(function(){
             var row = $(this).closest("tr")[0];
             var id  = row.cells[2].innerHTML;
-            fav[cityMap[city]].set(id,false);
+            fav[city].set(id,false);
         });
 
         // update checkboxall status
@@ -493,7 +564,7 @@ $(document).on("change", "input[name='checkrow']", function () {
         $selectAll.prop('checked', (tdCheckboxChecked === $tdCheckbox.length));
 
         // get the key value for store data in map
-        var key = city + page_number + "with" + pageLimit;
+        var key = cityArray[city] + page_number + "with" + pageLimit;
         fav[cityArray.length].set(key,(tdCheckboxChecked === $tdCheckbox.length)); // update info
 
     })
@@ -503,18 +574,57 @@ $(document).on("change", "input[name='checkrow']", function () {
     var id  = row.cells[2].innerHTML;
 
     // check if checkbox checked or unchcked and update info according to that
-    if(fav[cityMap[city]].get(id)){
+    if(fav[city].get(id)){
         // update Add Favorite buttion info
-        fav[cityMap[city]].set(id,false);
+        fav[city].set(id,false);
     }else{
         // update Add Favorite buttion info
-        fav[cityMap[city]].set(id,true);
+        fav[city].set(id,true);
     }
 
 });
 
 
 
+//...............................................Data of options to save in page state.....................................//
+
+// declaring Options data
+limitData = Array(cityArray.length);
+pageNumberData  = Array(cityArray.length);
+pageLimitData = Array(cityArray.length);
+
+// Declaring Sorting Data
+orderData = Array(cityArray.length);
+sortColNumberData = Array(cityArray.length);
+sortColIDData = Array(cityArray.length);
+
+// initialisze Data array
+for(i=0;i<cityArray.length;++i){
+    // initialising Options data
+    limitData[i] = 0;
+    pageNumberData[i] = 1;
+    pageLimitData[i] = 5;
+
+    // initialising sorting data
+    orderData[i] = 'asc';
+    sortColNumberData[i] = 0;
+    sortColIDData[i] = '#';
+}   
+
+// checking NUll Data
+function checkNullData(){
+    for(i=0;i<cityArray.length;++i){
+        // initialising Options data
+        limitData[i]= limitData[i]==null?0:limitData[i];
+        pageNumberData[i] =  pageNumberData[i]==null?1: pageNumberData[i];
+        pageLimitData[i] = pageLimitData[i]==null?5:pageLimitData[i];
+    
+        // initialising sorting data
+        orderData[i] = orderData[i]==null?'asc':orderData[i];
+        sortColNumberData[i] = sortColNumberData[i]==null?0:sortColNumberData[i];
+        sortColIDData[i] = sortColIDData[i]==null?'#':sortColIDData[i];
+    }   
+}
 
 
 
@@ -530,10 +640,18 @@ function save() {
         }
         
     }
-    localStorage.setItem("order",order);
-    localStorage.setItem("sortColNumber", sortColNumber);
-    localStorage.setItem("sortColId", sortColId);
-    // localStorage.setItem("selectAllCheckbox",JSON.stringify(Array.from(allCheckBox.entries())))
+
+    localStorage.setItem("city", city);
+
+    // saving Sorting Data
+    localStorage.setItem("orderData", JSON.stringify(orderData));
+    localStorage.setItem("sortColNumberData", JSON.stringify(sortColNumberData));
+    localStorage.setItem("sortColIDData", JSON.stringify(sortColIDData));
+    
+    // saving Otions Data
+    localStorage.setItem("limitData", JSON.stringify(limitData));
+    localStorage.setItem("pageNumberData", JSON.stringify(pageNumberData));
+    localStorage.setItem("pageLimitData", JSON.stringify(pageLimitData));
 }
 
 // function to load the data after reload page
@@ -546,10 +664,56 @@ function load() {
         }
         
     }
-    order = localStorage.getItem("order");
-    sortColNumber = localStorage.getItem("sortColNumber");
-    sortColId = localStorage.getItem("sortColId");
+
+    if(localStorage.getItem("city")!=null){
+        city = localStorage.getItem("city");
+    }
+    
+    // sorting Data retriving....................//
+    if((JSON.parse(localStorage.getItem("orderData"))) != null){
+        orderData = JSON.parse(localStorage.getItem("orderData"));
+    }
+    if((JSON.parse(localStorage.getItem("sortColNumberData"))) != null){
+        sortColNumberData = JSON.parse(localStorage.getItem("sortColNumberData"));
+    }
+    if((JSON.parse(localStorage.getItem("sortColIDData"))) != null){
+        sortColIDData = JSON.parse(localStorage.getItem("sortColIDData"));
+    }
+
+
+    // Options Data retriving........................//
+    if((JSON.parse(localStorage.getItem("limitData"))) != null){
+        limitData = JSON.parse(localStorage.getItem("limitData"));
+    }
+    if((JSON.parse(localStorage.getItem("pageNumberData"))) != null){
+        pageNumberData = JSON.parse(localStorage.getItem("pageNumberData"));
+    }
+    if((JSON.parse(localStorage.getItem("pageLimitData"))) != null){   
+        pageLimitData = JSON.parse(localStorage.getItem("pageLimitData"));
+    }
+    
+    // check for null values in array
+    checkNullData();
+
+    // clear localstorage
     localStorage.clear();
+
+    // console.log("********************************");
+
+    $("#selected_city").val(city);
+    $("#selected_limit").val(limitData[city]);
+    $("#selected_page_limit").val(pageLimitData[city]);
+
+    limit = limitData[city];
+    pageLimit = pageLimitData[city];
+    page_number = pageNumberData[city];
+
+    order = orderData[city];
+    sortColId = sortColIDData[city];
+    sortColNumber = sortColNumberData[city];
+
+    // First call of update function
+    getUpdate();
 }
 
 // call function at starting to load the saved data at client side
@@ -557,7 +721,7 @@ load();
 
 // call save function to save the page state before thr page refresh
 window.onbeforeunload = function(event){
-    // event.preventDefault();
+    event.preventDefault();
     save.apply();
     return event.returnValue = "Are you sure you want to exit?";
 };
