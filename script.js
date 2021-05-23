@@ -132,7 +132,7 @@ function getUpdate(){
             //     $(this).html(str).fadeIn(400);
             // });
 
-            $(table).html(str).fadeIn(400);
+            $('table').html(str).fadeIn(400);
             $('#page-nav .pagination').html(pageNaveStr).fadeIn(400);
                 // sort the data
                 // call the sort function to maintain the data before page reload or page change
