@@ -253,14 +253,14 @@ function changeTable(banksData, start){
         }
         str += '<tr>'
         str += '<td><input id="cehckrow" type="checkbox" class="star" name="checkrow" style="width:1.5em"'+ checked + ' ></th>'
-        str += '<td scope="row" style="min-width:100px">'+ cnt + '</th>';
-        str += '<td style="min-width:150px" >' + data.ifsc + '</td>';
-        str += '<td style="min-width:150px" >' + data.bank_id + '</td>';
-        str += '<td style="min-width:100px" >' + data.branch  + '</td>';
-        str += '<td style="min-width:100px" >' + data.address + '</td>';
-        str += '<td style="min-width:100px" >' + data.city + '</td>';
-        str += '<td style="min-width:150px" >' + data.district + '</td>';
-        str += '<td style="min-width:100px" >' + data.state + '</td>';
+        str += '<td scope="row" >'+ cnt + '</th>';
+        str += '<td>' + data.ifsc + '</td>';
+        str += '<td>' + data.bank_id + '</td>';
+        str += '<td>' + data.branch  + '</td>';
+        str += '<td>' + data.address + '</td>';
+        str += '<td>' + data.city + '</td>';
+        str += '<td>' + data.district + '</td>';
+        str += '<td>' + data.state + '</td>';
         str += '</tr>';
         cnt++;
         checked = '';
