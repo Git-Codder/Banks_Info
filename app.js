@@ -14,6 +14,7 @@ var bodyParser = require('body-parser'),
         extended: true
     }))
     
+    app.use('/', express.static(path.join(__dirname, '/')))
     app.use('/views', express.static(path.join(__dirname, '/views')))
     app.use(bodyParser.json());
 
