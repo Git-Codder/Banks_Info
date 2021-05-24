@@ -52,7 +52,7 @@ a.nav-link {
 .star:before {
     color:navy;
     font-family: "Font Awesome 5 Free";
-    font-size: 0.75em;
+    font-size: 0.45em;
    content: "\2606";
    position: absolute;
    text-align: justify;
