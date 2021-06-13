@@ -1,4 +1,4 @@
-# [**Fyle Challenge (Banks Info)**](https://www.notion.so/Fyle-Full-Stack-Coding-Challenge-db30c5cb91d54de1b330c16f22fc49f0) [Part 2]
+# **Fyle Challenge (Banks Info)**
 
 ## Live Demo [Link](https://banks-info.herokuapp.com/)
 
