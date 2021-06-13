@@ -1,4 +1,4 @@
-# **Fyle Challenge (Banks Info)**
+# **Banks Info**
 
 ## Live Demo [Link](https://banks-info.herokuapp.com/)
 
