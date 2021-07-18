@@ -1,5 +1,5 @@
 {
-  "name": "fyle_chalange",
+  "name": "Banks_Info",
   "version": "1.0.0",
   "description": "Banks Info",
   "main": "app.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Git-Codder/Fyle_Chalange.git"
+    "url": "git+https://github.com/Git-Codder/Banks_Info.git"
   },
   "author": "Aditya Kumawat",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Git-Codder/Fyle_Chalange/issues"
+    "url": "https://github.com/Git-Codder/Banks_Info/issues"
   },
-  "homepage": "https://github.com/Git-Codder/Fyle_Chalange#readme",
+  "homepage": "https://github.com/Git-Codder/Banks_Info#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
     "bootpag": "^1.0.7",
