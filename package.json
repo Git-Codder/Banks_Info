@@ -1,7 +1,7 @@
 {
   "name": "fyle_chalange",
   "version": "1.0.0",
-  "description": "Fyle Full Stack Chalange",
+  "description": "Banks Info",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
